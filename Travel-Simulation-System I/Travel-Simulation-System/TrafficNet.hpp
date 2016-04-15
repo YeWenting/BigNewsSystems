@@ -14,19 +14,19 @@
 #include <fstream>
 #include <iostream>
 
-class TrafficNet
+class TrafficNet                                                //是不是有一种方法可以让整个程序只有一个实例？？
 {
 public:
     TrafficNet();
-    TrafficNet(const std::string);
     ~TrafficNet();
     
 private:
     class Line
     {
     public:
+        std::string name;                                       //线路名
         Line *NextLine;                                         //下一条边
-        int tail, LeaveTime, duration;                          //tail该边的指向的点，LeaveTime这条路什么时候走，duration所需时间
+        int tail, LeaveTime, duration, cost;                          //tail该边的指向的点
     };
     class City
     {
@@ -35,9 +35,11 @@ private:
         std::string name;                                       //名字
     };
     City citys[MaxV];
+    int CheapWay[MaxV][MaxV];                                   //用来求两地最省钱的邻接矩阵
+    int MinCost[MaxV][MaxV];                                    //用 Floyd 算法求出的最省钱路线
 };
 
-TrafficNet::TrafficNet(const std::string filename)              //从文件中读入 初始化交通网 支持增加边
+TrafficNet::TrafficNet()              //从文件中读入 初始化交通网
 {
 //    ifstream 
 }
