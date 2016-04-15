@@ -25,20 +25,19 @@ private:
     class Line
     {
     public:
-        Line *NextLine;
-        int tail, LeaveTime, duration;
+        Line *NextLine;                                         //下一条边
+        int tail, LeaveTime, duration;                          //tail该边的指向的点，LeaveTime这条路什么时候走，duration所需时间
     };
     class City
     {
     public:
-        Line *FirstLine;
-        std::string name;
+        Line *FirstLine;                                        //第一条边
+        std::string name;                                       //名字
     };
     City citys[MaxV];
-    
 };
 
-TrafficNet::TrafficNet(const std::string filename)
+TrafficNet::TrafficNet(const std::string filename)              //从文件中读入 初始化交通网 支持增加边
 {
 //    ifstream 
 }
