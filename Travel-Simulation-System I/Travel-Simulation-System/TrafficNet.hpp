@@ -15,7 +15,8 @@
 #include <iostream>
 #include "People.hpp"
 
-class TrafficNet                                                //是不是有一种方法可以让整个程序只有一个实例？？
+class TrafficNet                                                //是不是有一种方法可以让整个程序只有一个实例？？ 
+																//是的。singleton 设计模式就是这样的
 {
 public:
     TrafficNet();

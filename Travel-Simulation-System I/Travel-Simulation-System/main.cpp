@@ -7,13 +7,14 @@
 //
 
 #include <iostream>
-
+#include"TimeTable.hpp"
 using namespace std;
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    int sum = 0;
-    for (auto i = 0; i < 10; i++)
-        sum += i;
+	TimeTable t;
+	t.Print_Table();
+
+	
     return 0;
 }

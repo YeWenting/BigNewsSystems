@@ -7,7 +7,7 @@ class TrafficNet
 {
 	public:
 	TrafficNet();
-	TrafficNet(const string);
+	TrafficNet(const std::string);
 	~TrafficNet();
 	
 	private:
@@ -21,13 +21,13 @@ class TrafficNet
 		{
 			public:
 				Line *FirstLine;
-				string name;
+				std::string name;
 		};
 		City citys[MaxV];
 
 };
 
-TrafficNet::TrafficNet(const string filename)
+TrafficNet::TrafficNet(const std::string filename)
 {
-	ifstream 
+	std::ifstream 
 }
