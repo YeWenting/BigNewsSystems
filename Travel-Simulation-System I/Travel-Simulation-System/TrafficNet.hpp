@@ -13,13 +13,14 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "People.hpp"
 
 class TrafficNet                                                //是不是有一种方法可以让整个程序只有一个实例？？
 {
 public:
     TrafficNet();
     ~TrafficNet();
-    
+    void Plan_Route(People);
 private:
     class Line
     {
@@ -38,6 +39,8 @@ private:
     int CheapWay[MaxV][MaxV];                                   //用来求两地最省钱的邻接矩阵
     int MinCost[MaxV][MaxV];                                    //用 Floyd 算法求出的最省钱路线
 };
+
+TrafficNet net;
 
 TrafficNet::TrafficNet()              //从文件中读入 初始化交通网
 {
