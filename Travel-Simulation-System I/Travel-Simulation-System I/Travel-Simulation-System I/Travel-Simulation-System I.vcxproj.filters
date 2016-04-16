@@ -22,21 +22,24 @@
     <ClCompile Include="..\..\Travel-Simulation-System\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Travel-Simulation-System\People.cpp">
+    <ClCompile Include="..\..\Travel-Simulation-System\TimeTable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Travel-Simulation-System\TrafficNet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Travel-Simulation-System\People.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Travel-Simulation-System\People.hpp">
+    <ClInclude Include="..\..\Travel-Simulation-System\TimeTable.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Travel-Simulation-System\TimeTable.hpp">
+    <ClInclude Include="..\..\Travel-Simulation-System\TrafficNet.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Travel-Simulation-System\TrafficNet.hpp">
+    <ClInclude Include="..\..\Travel-Simulation-System\People.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
