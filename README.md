@@ -35,19 +35,75 @@
 5. 实现图形化
 
 ##建立模型
-###图的建立
+###模型假设
 考虑到相比于飞机，汽车与火车这类陆地交通方式受限于**地缘因素**，其交通网络的**连通性**没有航班的强。举例来说就是：我们考虑从福州到北京，飞机可以不受空间限制直接抵达北京，而火车很可能需要途径上海市作为中转，然后才能到达北京。出于这方面考虑，陆地交通网的建立会比建立空中交通网更为复杂。为了简化模型，在不失去问题*普适性的*前提下，我们做出以下假设：
-**两地之间有直达（不经过其他城市）的火车，当且仅当两地地缘上相邻。**
+1. **两地之间有直达（不经过其他城市）的火车，当且仅当两地地缘上相邻。**
+2. 对于每一种交通工具，其每天的时刻表是**固定**的。
 
 <img src="/Picture/figure1.png" width="600" height="450" />
 
 其意义可以通过图1来直观的理解，即火车只能开在两地之间的边上。
 
+<img src="/Picture/figure2.png" width="450" height="210"/>
+
+基于以上两个假设，我们考虑两*非相邻城市*某车次的票价时，我们分别计算其每一条边上的费用，累加起来就是总费用。如Figure 2所示，假设我们要做 G28从福州到北京，我们用福州->合肥加上合肥->北京的票价之和793元来近似真实票价748元，误差为6.01%，**说明在允许一定误差的情况下，假设合理。**
+
 在命令行版本中，考虑到是第一版本，我们保守地取城市的的个数为N=11。考虑到地缘因素，我们分散性的选取了北京市，沈阳市，呼和浩特市，乌鲁木齐市，西安市，郑州市，上海市，南京市，成都市，广州市和福州市作为我们的研究对象，并在*地缘上相近的地区连一条边*。
 
 
-###数据的采集
+###采集数据
 1. 对于陆地交通网的时刻表与价格信息，我们通过使用 Python 在[铁友网](http://shikebiao.tieyou.com/)上面通过重复提交表单，利用正则表达式匹配出我们需要的时刻信息与价格（取二等座的价格）。同时为了使图不要过于冗余，城市对之间的重边不超过3个。	
 2. 对于航班时刻表，我们不考虑中转航班（在实际中，国内航班里中转航班所占比例也不大），我们对于图中**任意城市对**都建立**一**条边，同样使用 Python，在[去哪儿网](http://www.qunar.com/)上面查找对应的时刻表和价格信息。
-3. 
+
+
+##数据结构说明
+```cpp  
+class TravelPlan                                      //存储用户旅行方案的类       
+{
+public:
+    TravelPlan();
+    TravelPlan(int, int,  std::vector<int>, int);
+    int source, destination, type;
+    std::vector<int> station;
+};
+
+class People
+{
+public:
+    People();
+    void Simulate(const int&);                          //模拟经过多少时间 0 <= time <= 1
+    void Make_Route(const std::vector<int>&);           //把计算出来的路线赋值给用户
+    TravelPlan Get_Plan();
+private:
+    std::string name, password;
+    int id;
+    int location;                                       //正表示停留在某一点上，负表示停留在某条边上 abs()为下标
+    int duration;                                       //下次位置转移是什么时候
+    TravelPlan plan;
+    std::deque<int> route;                              //存储未来的旅行路线，存储元素是边序号
+};
+
+class TrafficNet                                        //是不是有一种方法可以让整个程序只有一个实例？？
+{
+public:
+    void Plan_Route(People);                            //为用户规划路线     
+private:
+    class Line                                          //内部类 表示一个交通线路
+    {
+    public:
+        std::string name;                               //线路名
+        Line *NextLine;                                 //下一条边
+        int tail, LeaveTime, duration, cost;            //tail该边的指向的点
+    };
+    class City
+    {
+    public:
+        Line *FirstLine;                                //第一条边
+        std::string name;                               //名字
+    };
+    City citys[MaxV];
+    int CheapWay[MaxV][MaxV];                           //用来求两地最省钱的邻接矩阵
+    int MinCost[MaxV][MaxV];                            //用 Floyd 算法求出的最省钱路线
+};
+```
 
