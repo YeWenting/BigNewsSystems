@@ -115,11 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Travel-Simulation-System\main.cpp" />
-    <ClCompile Include="..\..\Travel-Simulation-System\People.cpp" />
     <ClCompile Include="..\..\Travel-Simulation-System\TrafficNet.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Travel-Simulation-System\People.hpp" />
     <ClInclude Include="..\..\Travel-Simulation-System\TimeTable.hpp" />
     <ClInclude Include="..\..\Travel-Simulation-System\TrafficNet.hpp" />
   </ItemGroup>

@@ -22,17 +22,11 @@
     <ClCompile Include="..\..\Travel-Simulation-System\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Travel-Simulation-System\People.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Travel-Simulation-System\TrafficNet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Travel-Simulation-System\People.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Travel-Simulation-System\TimeTable.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
