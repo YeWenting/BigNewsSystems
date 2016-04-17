@@ -1,13 +1,13 @@
 //
-//  TrafficNet.hpp
+//  TrafficNet.h
 //  Travel-Simulation-System I
 //
-//  Created by YeWenting. on 16/4/10.
+//  Created by YeWenting. on 16/4/16.
 //  Copyright © 2016年 Apart I, 404. All rights reserved.
 //
 
-#ifndef TrafficNet_hpp
-#define TrafficNet_hpp
+#ifndef TrafficNet_h
+#define TrafficNet_h
 
 #define MaxV 20
 #include <string>
@@ -16,7 +16,7 @@
 #include "People.hpp"
 
 class TrafficNet                                                //是不是有一种方法可以让整个程序只有一个实例？？
-                                                                //是的。singleton 设计模式就是这样的
+//是的。singleton 设计模式就是这样的
 {
 public:
     TrafficNet();
@@ -28,7 +28,7 @@ private:
     public:
         std::string name;                                       //线路名
         Line *NextLine;                                         //下一条边
-        int tail, LeaveTime, duration, cost;                    //tail该边的指向的点
+        int tail, LeaveTime, duration, cost;                          //tail该边的指向的点
     };
     class City
     {
@@ -43,9 +43,6 @@ private:
 
 TrafficNet net;
 
-TrafficNet::TrafficNet()              //从文件中读入 初始化交通网
-{
-    //    ifstream
-}
 
-#endif /* TrafficNet_hpp */
+
+#endif /* TrafficNet_h */
