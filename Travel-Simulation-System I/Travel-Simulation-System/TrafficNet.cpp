@@ -1,4 +1,4 @@
-//
+﻿//
 //  TrafficNet.cpp
 //  Travel-Simulation-System I
 //
@@ -8,47 +8,69 @@
 
 #include "TrafficNet.h"
 
-void Tour::RotateCities( const int& c1,
-                        const int& c2,
-                        const int& c3 )
-{
-    int c1_new = c1 == 0 ? 1 : c1;
-    
-    std::vector<int>::iterator it1 = cities.begin() + c1_new;
-    std::vector<int>::iterator it2 = cities.begin() + c2;
-    std::vector<int>::iterator it3 = cities.begin() + c3;
-    
-    rotate( it1, it2, it3 );
+using namespace std;
+TrafficNet::TrafficNet(const TimeTable& t) {
+	Init_Citys(t);
+//	Get_Cheap_Way();
+//	Get_Min_Cost();
+}
+TrafficNet::~TrafficNet() {
+	//wait for typing
+	for (int u = 0; u != MapMaxV; u++) {
+	//	cout << u;
+		if (citys[u].FirstLine) {
+			Line*temp = NULL;
+	//		cout << citys[u].name;
+			while (citys[u].FirstLine) {
+				temp = citys[u].FirstLine;
+				citys[u].FirstLine = temp->NextLine;
+				delete temp;
+				temp = NULL;
+			}
+		}
+	}
+
+}
+void TrafficNet::Plan_Route(const People& p) {
+	//wait for typing
+}
+void TrafficNet::Init_Citys(const TimeTable& t) {
+	for (auto u = 0; u != MapMaxV; u++) 
+		citys[u].FirstLine = NULL;
+	for (auto u : t.cityNum) 
+		citys[u.second].name = u.first;
+	
+	for (auto u : t.table) {
+		Line*temp = new Line;
+		Line*search = citys[u.startPoint].FirstLine;
+		temp->name = u.vechileNo;
+		temp->cost = u.price;
+		temp->LeaveTime = u.startTime;
+		temp->duration = u.endTime - u.startTime;
+		temp->tail = u.endPoint;
+		temp->NextLine = NULL;
+
+		if (!citys[u.startPoint].FirstLine)
+			citys[u.startPoint].FirstLine = temp;
+		else {
+			temp->NextLine = citys[u.startPoint].FirstLine;
+			citys[u.startPoint].FirstLine = temp;
+		}
+	}
+
 }
 
-void Tour::ReverseCities( const int& c1, const int& c2 )
-{
-    int c1_n = c1 < c2 ? c1 : c2;
-    int c2_n = c1 < c2 ? c2 : c1;
-    
-    if ( c1_n == 0 ) c1_n = 1;
-    
-    std::vector<int>::iterator it1, it2;
-    
-    it1 = cities.begin() + c1_n;
-    it2 = cities.begin() + c2_n;
-    
-    reverse( it1, it2 );
-}
-
-void TSPalgorithm::Run()
-{
-    tour.Reset();
-    tour.CreateRandomTour();
-    //tour.CreateNearestNeighbourTour();
-    size = tour.TourSize();
-    
-    // Create the optimal tour
-    for ( int i = 0; i < iterations; i++ )
-    {
-        Rotate( i );
-        Reverse( i );
-        SwapRandomPair( i );
-        Notify( (const int&) tour.TourDistance(), (const int&) i );
-    }
+void TrafficNet::Print_Citys()const {
+	for (int u = 0; u != MapMaxV; u++) {
+		cout << u << " -> ";
+		Line*search = citys[u].FirstLine;
+		
+		while (search!=NULL) {
+			cout << search->name;
+			cout << " -> ";
+			search = search->NextLine;
+		}
+		cout << endl;
+	}
+	
 }
