@@ -1,6 +1,8 @@
 # Personal things
 文档资料/
 *.pages
+Travel-Simulation-System I/Build
+Travel-Simulation-System I/DerivedData
 
 # Compiled Object files
 *.slo
