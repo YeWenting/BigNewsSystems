@@ -326,3 +326,21 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user
+
+*.strings-res
+
+*.strings-file
+
+*.strings-dir
+
+*.xcindexdb-wal
+
+*.xcindexdb-shm
+
+*.strings-sym
+
+*.xcindexdb
+
+*.hmap
+
+*.hmap
