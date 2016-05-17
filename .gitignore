@@ -344,3 +344,5 @@ CMakeLists.txt.user
 *.hmap
 
 *.hmap
+
+*.zip
