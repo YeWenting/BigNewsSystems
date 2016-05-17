@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		582356FE1CC7784B00964B22 /* TimeTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 582356FB1CC7784B00964B22 /* TimeTable.cpp */; };
-		5835F1391CC0D26A000D3B93 /* People.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5835F1371CC0D26A000D3B93 /* People.cpp */; };
+		5835F1391CC0D26A000D3B93 /* people.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5835F1371CC0D26A000D3B93 /* people.cpp */; };
 		58735F661CBA534100D34642 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58735F651CBA534100D34642 /* main.cpp */; };
-		58DB5B891CBA5A3F00DB005A /* TrafficNet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58DB5B871CBA5A3F00DB005A /* TrafficNet.cpp */; };
+		58C256831CE71BD600566133 /* trafficNet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58C256811CE71BD600566133 /* trafficNet.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,14 +25,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		582356FA1CC7784B00964B22 /* People.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = People.h; sourceTree = "<group>"; };
-		582356FB1CC7784B00964B22 /* TimeTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimeTable.cpp; sourceTree = "<group>"; };
-		582356FC1CC7784B00964B22 /* TimeTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeTable.h; sourceTree = "<group>"; };
-		582356FD1CC7784B00964B22 /* TrafficNet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrafficNet.h; sourceTree = "<group>"; };
-		5835F1371CC0D26A000D3B93 /* People.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = People.cpp; sourceTree = "<group>"; };
+		582356FA1CC7784B00964B22 /* people.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = people.h; sourceTree = "<group>"; };
+		5835F1371CC0D26A000D3B93 /* people.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = people.cpp; sourceTree = "<group>"; };
 		58735F621CBA534100D34642 /* Travel-Simulation-System I */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Travel-Simulation-System I"; sourceTree = BUILT_PRODUCTS_DIR; };
-		58735F651CBA534100D34642 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		58DB5B871CBA5A3F00DB005A /* TrafficNet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrafficNet.cpp; sourceTree = "<group>"; };
+		58735F651CBA534100D34642 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = main.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		58C256811CE71BD600566133 /* trafficNet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = trafficNet.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		58C256821CE71BD600566133 /* trafficNet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = trafficNet.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,13 +63,11 @@
 		58735F641CBA534100D34642 /* Travel-Simulation-System */ = {
 			isa = PBXGroup;
 			children = (
-				582356FA1CC7784B00964B22 /* People.h */,
-				582356FB1CC7784B00964B22 /* TimeTable.cpp */,
-				582356FC1CC7784B00964B22 /* TimeTable.h */,
-				582356FD1CC7784B00964B22 /* TrafficNet.h */,
 				58735F651CBA534100D34642 /* main.cpp */,
-				5835F1371CC0D26A000D3B93 /* People.cpp */,
-				58DB5B871CBA5A3F00DB005A /* TrafficNet.cpp */,
+				58C256811CE71BD600566133 /* trafficNet.cpp */,
+				58C256821CE71BD600566133 /* trafficNet.h */,
+				582356FA1CC7784B00964B22 /* people.h */,
+				5835F1371CC0D26A000D3B93 /* people.cpp */,
 			);
 			name = "Travel-Simulation-System";
 			path = Code;
@@ -134,10 +129,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5835F1391CC0D26A000D3B93 /* People.cpp in Sources */,
-				582356FE1CC7784B00964B22 /* TimeTable.cpp in Sources */,
+				5835F1391CC0D26A000D3B93 /* people.cpp in Sources */,
+				58C256831CE71BD600566133 /* trafficNet.cpp in Sources */,
 				58735F661CBA534100D34642 /* main.cpp in Sources */,
-				58DB5B891CBA5A3F00DB005A /* TrafficNet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

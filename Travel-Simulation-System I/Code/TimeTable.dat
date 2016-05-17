@@ -1,2 +1,7 @@
-Z123 BeiJing FuZhou 10 20 100
-Z324 FuZhou NeiMengGu 11 21 200
+A1 A B 10 20 1
+A2 A C 11 100 2
+A3 A D 1 2 5
+D1 D C 2 4 15
+C1 C E 7 9 25
+B1 B E 10 10 17
+B2 B C 5 6 0

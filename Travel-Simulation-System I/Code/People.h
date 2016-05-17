@@ -1,5 +1,5 @@
 ﻿//
-//  People.hpp
+//  People.h
 //  Travel-Simulation-System I
 //
 //  Created by YeWenting. on 16/4/15.
@@ -12,32 +12,33 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include <deque>
-#define MaxV 11
 
+#include "trafficnet.h"
+
+class Line;
 class TravelPlan
 {
 public:
     TravelPlan();
-    TravelPlan(int, int,  std::vector<int>, int);
+    TravelPlan(int, int, std::vector<int>, int);
     int source, destination, type;
     std::vector<int> station;
 };
 
 class People
 {
+friend class TrafficNet;
+    
 public:
     People();
-    void Simulate(const int&);
-    void Make_Route(const std::vector<int>&);
-    TravelPlan Get_Plan();
 private:
     std::string name, password;
-    int id;
-    int location;                                       //正表示停留在某一点上，负表示停留在某条边上 abs()为下标
-    int duration;                                       //下次位置转移是什么时候
+    std::string realLocation;
+    int location, histroy;                                             //用于 dfs
     TravelPlan plan;
-    std::deque<int> route;                  //存储未来的旅行路线，存储元素是边序号 station 表示要经过
+    std::vector<Line> route;                                  //存储未来的旅行路线，存储元素是边序号 station 表示要经过
+    void Assign_Route(const std::vector<Line> &);
+    void Check_City;
 };
 
 #endif /* People_hpp */
