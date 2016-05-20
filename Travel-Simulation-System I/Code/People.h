@@ -23,6 +23,8 @@ public:
     TravelPlan(int, int, std::vector<int>, int);
     int source, destination, type;
     std::vector<int> station;
+    int num_of_station;
+    int timeLimit;
 };
 
 class People
@@ -38,7 +40,7 @@ private:
     TravelPlan plan;
     std::vector<Line> route;                                  //存储未来的旅行路线，存储元素是边序号 station 表示要经过
     void Assign_Route(const std::vector<Line> &);
-    void Check_City;
+    int Check_City();
 };
 
 #endif /* People_hpp */

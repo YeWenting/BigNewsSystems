@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #include "people.h"
 #include "trafficNet.h"
@@ -35,13 +36,13 @@ People::People()
     plan.source = plan.destination = plan.type = 0;
 }
 
-void People::Check_City()
+int People::Check_City()                       //到达一个新城市 判断是不是必经城市
 {
     for (int i = 0; i < plan.station.size(); ++i)
-        if (location == plan.station[i])
-            histroy = histroy && (1 << i);
+        if (plan.station[i] == location)
+            return i;
+    return -1;
 }
-
 
 //void People:: Make_Route(const vector<int> &way)
 //{
@@ -49,3 +50,5 @@ void People::Check_City()
 //    for (auto i = .begin(); i < way.end(); ++i)
 //        route.push_back(*i);
 //}
+
+//模拟中 到达一个必经点 要去掉这个点

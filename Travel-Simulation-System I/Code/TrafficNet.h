@@ -8,9 +8,12 @@
 
 #pragma once
 
-#define MAXV 1000
+#define MAXV 50
 #define MAXVALUE (1 << 27)
 #define MAXTIME 24
+#define HIGHTEMP 10000000
+#define MIDTEMP 5
+#define LOWTEMP (1.01)
 
 #include <string>
 #include <fstream>
@@ -19,6 +22,8 @@
 #include <vector>
 
 #include "people.h"
+
+extern int current_time;
 
 class People;
 class TravelPlan;
@@ -55,7 +60,6 @@ public:
 
 class TrafficNet
 {
-friend class People;
 public:
     TrafficNet();
     ~TrafficNet();
@@ -66,24 +70,25 @@ private:
     void Init_Citys();
     void Add_Edge(const Item &);
     int  Find_City(const std::string &);
-    void Run_Floyd();
-    void Run_SPFA();
-    void Run_DFS(People &);
-    void Print_Route(const int, const std::vector<Line> &) const;
-    int Move(const int &, const Line &) const;                  //在某一时刻，经某边到达另一个邻点的时刻
-    
-    int Get_Cost(const std::vector <int> &, const TravelPlan &) const;
-    int Get_Time(const std::vector <int> &, const People &) const;                      //因为
     void Design_Route(People &);
+    void Print_Route(const int, const std::vector<Line> &) const;
+    
+    int Move(const int &, const Line &) const;                  //在某一时刻，经某边到达另一个邻点的时刻
     double Accept_Rate(const int &, const int &, const double &) const;
-    void Run_SA(People &);
-    void Generate_Cheap_Route(People &, const std::vector <int> &);
-    void Generate_Quick_Route(People &, const std::vector <int> &);
+    std::vector <Line> Generate_Cheap_Route(People &, const std::vector <int> &);
+    std::vector <Line> Generate_Quick_Route(People &, const std::vector <int> &);
+    
+    int Get_Quick_Time(const int &, const int &, const int &);
+    int Get_Route_Time(const std::vector <Line> &, const int &);
+    int Get_Cost(const std::vector <int> &, const People &) const;
+    int Get_Time(const std::vector <int> &, const People &, const int &) const;                      //因为
+    int Get_Rough_Time(People &, const int &);
+    int Get_Rough_Cost(People &);
  
     City citys[MAXV];
     std::vector <People> people;
-    int num_of_city, num_of_edge, num_of_people;
-    std::map<std::string, int>   cityNum;
+    int num_of_city, num_of_people;
+    std::map<std::string, int> cityNum;
     
     std::vector <Line> cheapRoute[MAXV][MAXV];
     int cheapWay[MAXV][MAXV];                                   //用来求两地最省钱的邻接矩阵
@@ -91,5 +96,12 @@ private:
     std::vector <Line> quickRoute[MAXV][MAXV][MAXTIME];
     int quickWay[MAXV][MAXV][MAXTIME];                                    //i 城市到 j 城市 从某时刻出发 最早几点到（可超过24小时）
     
+    void Run_Floyd();
+    void Run_SPFA();
+    std::vector <int> Run_SA(const People &, const double &, const int & x = current_time);
+    
     int minMixCost;
+    std::vector <Line> bestRoute, currentRoute;
+    void Run_DFS(People &, const int &, const int &);
+
 };
