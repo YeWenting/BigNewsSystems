@@ -9,6 +9,12 @@
 #ifndef People_hpp
 #define People_hpp
 
+#define DEPART 0
+#define ARRIVE 1
+#define FINISH 2
+
+#define CLIENT_SLEEP -1
+
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -16,6 +22,9 @@
 #include "trafficnet.h"
 
 class Line;
+class TrafficNet;
+extern TrafficNet trafficNet;
+
 class TravelPlan
 {
 public:
@@ -23,7 +32,6 @@ public:
     TravelPlan(int, int, std::vector<int>, int);
     int source, destination, type;
     std::vector<int> station;
-    int num_of_station;
     int timeLimit;
 };
 
@@ -33,14 +41,17 @@ friend class TrafficNet;
     
 public:
     People();
+    std::string Get_Location();
 private:
     std::string name, password;
-    std::string realLocation;
-    int location, histroy;                                             //用于 dfs
+    int location;
     TravelPlan plan;
     std::vector<Line> route;                                  //存储未来的旅行路线，存储元素是边序号 station 表示要经过
-    void Assign_Route(const std::vector<Line> &);
+    int usedMoney, usedTime;
+    
+    void Report(const int &type);
     int Check_City();
+    void Transfer();
 };
 
 #endif /* People_hpp */

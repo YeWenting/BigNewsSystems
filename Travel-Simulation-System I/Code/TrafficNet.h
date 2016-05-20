@@ -11,9 +11,12 @@
 #define MAXV 50
 #define MAXVALUE (1 << 27)
 #define MAXTIME 24
+
 #define HIGHTEMP 10000000
 #define MIDTEMP 5
 #define LOWTEMP (1.01)
+
+#define ACTIVE -1
 
 #include <string>
 #include <fstream>
@@ -24,6 +27,7 @@
 #include "people.h"
 
 extern int current_time;
+extern int current_day;
 
 class People;
 class TravelPlan;
@@ -66,6 +70,10 @@ public:
     void Plan_Route(People& p);
 	void Print_Edges() const;
     void Add_People();
+    void Move_People();
+    int Find_People(const std::string &, const std::string &);
+    std::string Get_Location(const int &);
+    std::string Get_City(const int &);
 private:
     void Init_Citys();
     void Add_Edge(const Item &);
