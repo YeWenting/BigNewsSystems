@@ -23,13 +23,14 @@ extern int current_time;
 Line::Line()
 {
     name = "";
-    tail = leaveTime = duration = cost = 0;
+    head = tail = leaveTime = duration = cost = 0;
     NextLine = NULL;
 }
 
 Line::Line(const Line &a)
 {
     this->name = a.name;
+    this->head = a.head;
     this->tail = a.tail;
     this->leaveTime = a.leaveTime;
     this->duration = a.duration;
@@ -37,9 +38,10 @@ Line::Line(const Line &a)
     this->NextLine = NULL;
 }
 
-Line::Line(const std::string &na, const int &t, const int &st, const int &dura, const int &co = 0)
+Line::Line(const std::string &na, const int &h, const int &t, const int &st, const int &dura, const int &co = 0)
 {
     name = na;
+    head = h;
     tail = t;
     leaveTime = st;
     duration = dura;
@@ -111,7 +113,7 @@ int TrafficNet::Move(const int &time, const Line &edge) const   //表示在 time
 
 void TrafficNet::Add_Edge(const Item &v)
 {
-    Line *temp = new Line(v.edgeID, v.endPoint, v.startTime, v.endTime - v.startTime, v.price);
+    Line *temp = new Line(v.edgeID, v.startPoint, v.endPoint, v.startTime, v.endTime - v.startTime, v.price);
     
     //记录下两点间最便宜的路径
     if (cheapWay[v.startPoint][v.endPoint] > v.price)
@@ -499,10 +501,12 @@ void TrafficNet::Design_Route(People &p)
     int t = current_time;
     bestRoute.clear();
     
+    p.plan.source = p.location;
+    
     if (!p.route.empty() && p.route[0].leaveTime == ACTIVE)
     {
         p.plan.source = p.route[0].tail;
-        p.plan.timeLimit -= p.route[0].duration;
+        if (p.plan.type == 3) p.plan.timeLimit -= p.route[0].duration;
         t = (t + p.route[0].duration) % MAXTIME;
     }
     
@@ -513,7 +517,6 @@ void TrafficNet::Design_Route(People &p)
     
     else            //必经30个点
     {
-        clock_t start = clock();
         vector <int> roughTour(0);
         vector <Line> temp(0);
         
@@ -541,13 +544,50 @@ void TrafficNet::Design_Route(People &p)
                 Run_DFS(p, 0, 0);
             }
         }
-        
-        clock_t end = clock();
-        cout << (double)(end - start) / CLOCKS_PER_SEC << endl;
     }
     
     if (!p.route.empty()) bestRoute.insert(bestRoute.begin(), p.route[0]);
     p.route = bestRoute;
+
+    Print_Route(p);
+}
+
+//thisname是客户名字
+int TrafficNet::Change_Plan(const string &thisName, const string &newDest, const int &newType, const vector <string> &newStation, const int &newTimeLimit)
+
+{
+    int i = Find_People(thisName);
+    
+    if (i == ERROR) return ERROR;
+    
+    People &p = people[i];
+    
+    //检查输入数据是否有误
+    auto it = cityNum.find(newDest);
+    
+    if (it == cityNum.end() || newType < 1 || newType > 3)
+        return ERROR;
+    for (int i = 0; i < newStation.size(); ++i)
+    {
+        it = cityNum.find(newStation[i]);
+        
+        if (it == cityNum.end())
+            return ERROR;
+    }
+    
+    p.plan.type = newType;
+    p.plan.destination = cityNum[newDest];
+    
+    p.plan.station.clear();
+    p.plan.station.resize(newStation.size());
+    for (int i = 0; i < newStation.size(); ++i)
+        p.plan.station[i] = cityNum[newStation[i]];
+    
+    if (newType == 3)
+        p.plan.timeLimit = newTimeLimit;
+    
+    Design_Route(p);
+    return OK;
 }
 
 void TrafficNet::Print_Edges() const
@@ -565,23 +605,28 @@ void TrafficNet::Print_Edges() const
 	}
 }
 
-void TrafficNet::Print_Route(const int start, const vector<Line> & route) const
+void TrafficNet::Print_Route(const People &p) const
 {
-    int now = start, t = current_time, day = 0, money = 0;
+    int t = current_time, day = 0, money = 0;
     
-    if (route.empty())
+    if (p.route.empty())
     {
-        cout << "There isn't a route that can satify your need:(" << endl;
+        routeFile << "There isn't a route that can satify your need:(" << endl;
         return;
     }
     
-    for (auto next = route.begin();  next != route.end(); ++next)
+    routeFile << "Day " << current_day << " " << current_time << ":00  ";
+    routeFile <<"Client " << p.name << "'s route is:" << endl;
+    
+    for (auto next = p.route.begin();  next != p.route.end(); ++next)
     {
-        cout << "At " ;
-        if (next->leaveTime == ACTIVE) cout << current_time;
-        else cout << next->leaveTime;
-        cout << ":00, take on the " << next->name << " from " << citys[now].name
-            << " to " << citys[next->tail].name << ", arrive at " << Move(t, *next) % MAXTIME << ":00." << endl;
+        routeFile << "At " ;
+        //避免输出-1
+        if (next->leaveTime == ACTIVE) routeFile << current_time;
+        else routeFile << next->leaveTime;
+        
+        routeFile << ":00, take on the " << next->name << " from " << citys[next->head].name
+        << " to " << citys[next->tail].name << ", arrive at " << Move(t, *next) % MAXTIME << ":00." << endl;
         t = Move(t, *next);
         if (t >= MAXTIME)
         {
@@ -589,10 +634,9 @@ void TrafficNet::Print_Route(const int start, const vector<Line> & route) const
             day++;
         }
         money += next->cost;
-        now = next->tail;
     }
     
-    cout <<"Totally, it takes you $"<< money << " and " << day * MAXTIME + t - current_time << "h." << endl;
+    routeFile <<"Totally, it takes $"<< money << " and " << day * MAXTIME + t - current_time << "h." << endl << endl;
     
 }
 
@@ -604,7 +648,6 @@ void TrafficNet::Add_People()
     num_of_people ++;
     //cout << "Input the your name and password" << endl;
     infile >> temp->name;
-    infile >> temp->password;
 
     string start, end;
     //cout << "What's your departure and destination and plans?" << endl;
@@ -628,10 +671,9 @@ void TrafficNet::Add_People()
       //  cout << "And what's your time limit?" << endl;
         infile >> (temp->plan).timeLimit;
     }
-    Design_Route(*temp);    //如果是中途改变，要保留当前边
     
-    cout << "For client " << temp->name << ", Your route is:" << endl;
-    Print_Route((temp->plan).source, temp->route);
+    temp->location = (temp->plan).source;
+    Design_Route(*temp);    //如果是中途改变，要保留当前边
     
     if ((temp->route)[0].leaveTime == current_time)
     {
@@ -642,12 +684,12 @@ void TrafficNet::Add_People()
     people.push_back(*temp);
 }
 
-int TrafficNet::Find_People(const string &a, const string &b)
+int TrafficNet::Find_People(const string &a)
 {
     for (int i = 0; i < people.size(); ++i)
-        if (people[i].name == a && people[i].password == b)
+        if (people[i].name == a)
             return i;
-    return -1;
+    return ERROR;
 }
 
 string TrafficNet::Get_Location(const int &seq)

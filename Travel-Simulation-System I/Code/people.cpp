@@ -31,7 +31,7 @@ TravelPlan::TravelPlan(int s, int d, vector<int> stop, int t):station(stop)
 
 People::People()
 {
-    name = password = "";
+    name = "";
     route.clear();
     plan.source = plan.destination = plan.type = plan.timeLimit = 0;
     plan.station.clear();
@@ -48,18 +48,18 @@ int People::Check_City()                       //到达一个新城市 判断是
 
 void People::Report(const int &type)
 {
-    cout << "Day " << current_day << " " << current_time << ":00\t";
+    eventFile << "Day " << current_day << " " << current_time << ":00\t";
     switch (type) {
         case DEPART:
-            cout << "Client " << name << " take the " << route[0].name << " to "<< trafficNet.Get_City(route[0].tail) << usedMoney<< endl;
+            eventFile << "Client " << name << " take the " << route[0].name << " to "<< trafficNet.Get_City(route[0].tail) << endl;
             break;
             
         case ARRIVE:
-            cout << "Client " << name << " arrive " << trafficNet.Get_City(location) << endl;
+            eventFile << "Client " << name << " arrive " << trafficNet.Get_City(location) << endl;
             break;
             
         default:
-            cout <<  "Client " << name << " arrive the destination " << trafficNet.Get_City(location) << ", spending $" << usedMoney << " and " << usedTime + 1 << " hours totally." << endl;
+            eventFile <<  "Client " << name << " arrive the destination " << trafficNet.Get_City(location) << ", spending $" << usedMoney << " and " << usedTime + 1 << " hours totally." << endl;
             break;
     }
 }
