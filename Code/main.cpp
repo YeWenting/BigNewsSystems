@@ -1,33 +1,28 @@
-﻿//
-//  main.cpp
-//  Travel-Simulation-System
-//
-//  Created by YeWenting. on 16/4/10.
-//  Copyright © 2016年 Apart I, 404. All rights reserved.
-//
-
-
-#include "TrafficNet.h"
-#include <iostream>
-#include <cstdlib>
-
-#include "People.h"
-
-using namespace std;
+#include "travelsystem.h"
+#include"trafficNet.h"
+#include <QApplication>
+#include<fstream>
+//#include"blink.h"
 
 TrafficNet trafficNet;
 
 int current_time = 0;
+int current_day  = 0;
 
-int main(int argc, const char * argv[])
+std::ifstream infile("input.txt");
+std::ofstream routeFile("route.log"), eventFile("event.log");
+
+QTime mainClock(00,00,00);
+
+int main(int argc, char *argv[])
 {
-    //People a;
-    
-    trafficNet.Add_People();
-    
-//    vector <int> a(3, 10), b(2, 20);
-//    
-//    a.insert(a.end(), b.begin(), b.end());
-//    copy(a.begin(), a.end(), ostream_iterator <int>(cout," "));
-    return 0;
+    QApplication a(argc, argv);
+ //   LeftList w;
+   // mainClock = new QTime(00,00,00);
+    TravelSystem w;
+   // blink *w = new blink(50,50,100,Qt::blue);
+    //w->show();
+    w.show();
+
+    return a.exec();
 }

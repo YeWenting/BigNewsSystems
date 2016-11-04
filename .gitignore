@@ -30,7 +30,6 @@ Travel-Simulation-System I/DerivedData
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 

@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/travelsystem">
+        <file alias="timetable">bin/timetable.txt</file>
+        <file alias="guest">resource/avatar.svg</file>
+        <file alias="mainwindow">resource/businessman.svg</file>
+        <file alias="error">resource/error.svg</file>
+        <file alias="success">resource/success.svg</file>
+        <file alias="map">resource/map-location.svg</file>
+        <file alias="livemap">resource/map.png</file>
+        <file alias="busIcon">resource/bus.svg</file>
+        <file alias="planeIcon">resource/plane.svg</file>
+        <file alias="trainIcon">resource/train.svg</file>
+    </qresource>
+</RCC>

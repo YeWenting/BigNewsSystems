@@ -8,12 +8,19 @@
 
 #pragma once
 
-#define MAXV 50
-#define MAXVALUE (1 << 27)
-#define MAXTIME 24
-#define HIGHTEMP 10000000
-#define MIDTEMP 5
-#define LOWTEMP (1.01)
+#define ERROR           -1
+#define OK              0
+
+#define MAXV            50
+#define MAXVALUE        (1 << 27)
+#define MAXTIME         24
+#define TIME_PER_SEC    2
+
+#define HIGHTEMP        10000000
+#define MIDTEMP         5
+#define LOWTEMP         (1.00001)
+
+#define ACTIVE -1
 
 #include <string>
 #include <fstream>
@@ -24,6 +31,9 @@
 #include "people.h"
 
 extern int current_time;
+extern int current_day;
+
+extern std::ofstream routeFile, eventFile;
 
 class People;
 class TravelPlan;
@@ -43,10 +53,10 @@ class Line
 public:
     Line();
     Line(const Line &);
-    Line(const std::string &, const int &, const int &, const int &, const int &);
+    Line(const std::string &, const int &, const int &, const int &, const int &, const int &);
     std::string name;                                       //线路名
     Line *NextLine;                                         //下一条边
-    int tail, leaveTime, duration, cost;                    //tail该边的指向的点
+    int head, tail, leaveTime, duration, cost;                    //tail该边的指向的点
 };
 
 
@@ -60,18 +70,26 @@ public:
 
 class TrafficNet
 {
+    friend class TravelSystem;
 public:
     TrafficNet();
     ~TrafficNet();
-    void Plan_Route(People& p);
 	void Print_Edges() const;
-    void Add_People();
+    bool Add_People(People&);
+    void Move_People();
+    void Design_Route(People &);
+    int Find_People(const std::string &);
+    int Change_Plan(const std::string &, const std::string &, const int &, const std::vector <std::string> &, const int &);
+    std::string Get_Location(const int &);
+    std::string Get_City(const int &);
+    std::map<std::string, int> cityNum;
+    std::map<int,std::string > numCity;
 private:
     void Init_Citys();
     void Add_Edge(const Item &);
     int  Find_City(const std::string &);
-    void Design_Route(People &);
-    void Print_Route(const int, const std::vector<Line> &) const;
+//    void Design_Route(People &);
+    void Print_Route(const People &) const;
     
     int Move(const int &, const Line &) const;                  //在某一时刻，经某边到达另一个邻点的时刻
     double Accept_Rate(const int &, const int &, const double &) const;
@@ -88,7 +106,7 @@ private:
     City citys[MAXV];
     std::vector <People> people;
     int num_of_city, num_of_people;
-    std::map<std::string, int> cityNum;
+//    std::map<std::string, int> cityNum;
     
     std::vector <Line> cheapRoute[MAXV][MAXV];
     int cheapWay[MAXV][MAXV];                                   //用来求两地最省钱的邻接矩阵

@@ -14,6 +14,8 @@
 #include <deque>
 #include <cstring>
 #include "trafficNet.h"
+#include <string>
+#include<qDebug>
 
 using namespace std;
 
@@ -22,13 +24,14 @@ extern int current_time;
 Line::Line()
 {
     name = "";
-    tail = leaveTime = duration = cost = 0;
+    head = tail = leaveTime = duration = cost = 0;
     NextLine = NULL;
 }
 
 Line::Line(const Line &a)
 {
     this->name = a.name;
+    this->head = a.head;
     this->tail = a.tail;
     this->leaveTime = a.leaveTime;
     this->duration = a.duration;
@@ -36,9 +39,10 @@ Line::Line(const Line &a)
     this->NextLine = NULL;
 }
 
-Line::Line(const std::string &na, const int &t, const int &st, const int &dura, const int &co = 0)
+Line::Line(const std::string &na, const int &h, const int &t, const int &st, const int &dura, const int &co = 0)
 {
     name = na;
+    head = h;
     tail = t;
     leaveTime = st;
     duration = dura;
@@ -57,7 +61,7 @@ TrafficNet::TrafficNet()
 //        cout << i->first << ' ' << i->second << endl;
     //Print_Route(cityNum["0"], cheapRoute[cityNum["0"]][cityNum["4"]]);
    // Print_Route(0, cheapRoute[0][6]);
-    Add_People();
+ //   Add_People();
 }
 
 TrafficNet::~TrafficNet()
@@ -88,11 +92,19 @@ int TrafficNet::Find_City(const string &cityname)
     else
     {
         cityNum.insert(make_pair(cityname, num_of_city));
+        //add by xiong
+        numCity.insert(make_pair(num_of_city,cityname));
+        //
         citys[num_of_city].name = cityname;
         
         num_of_city++;
         return num_of_city - 1;
     }
+}
+
+string TrafficNet::Get_City(const int &seq)
+{
+    return citys[seq].name;
 }
 
 int TrafficNet::Move(const int &time, const Line &edge) const   //表示在 time 时间走某边 将在什么时候到达 可大于23
@@ -105,7 +117,7 @@ int TrafficNet::Move(const int &time, const Line &edge) const   //表示在 time
 
 void TrafficNet::Add_Edge(const Item &v)
 {
-    Line *temp = new Line(v.edgeID, v.endPoint, v.startTime, v.endTime - v.startTime, v.price);
+    Line *temp = new Line(v.edgeID, v.startPoint, v.endPoint, v.startTime, v.endTime - v.startTime, v.price);
     
     //记录下两点间最便宜的路径
     if (cheapWay[v.startPoint][v.endPoint] > v.price)
@@ -127,7 +139,7 @@ void TrafficNet::Add_Edge(const Item &v)
 
 void TrafficNet::Init_Citys()
 {
-    ifstream table("20.txt");
+    ifstream table("list_e.txt");
     
     num_of_city = num_of_people = 0;
     people.resize(0);
@@ -176,7 +188,6 @@ void TrafficNet::Init_Citys()
 
 void TrafficNet::Run_Floyd()    //最后需要的是：最短距离，最优路线， 可以优化
 {
-   // cout << num_of_city << endl;
     for (int k = 0; k < num_of_city; k++)
         for (int i = 0; i < num_of_city; i++)
             for (int j = 0; j < num_of_city; j++)
@@ -187,21 +198,10 @@ void TrafficNet::Run_Floyd()    //最后需要的是：最短距离，最优路�
                     cheapRoute[i][j].insert(cheapRoute[i][j].begin(), cheapRoute[k][j].begin(), cheapRoute[k][j].end());
                     cheapRoute[i][j].insert(cheapRoute[i][j].begin(), cheapRoute[i][k].begin(), cheapRoute[i][k].end());
                 }
-    
-//    for (int i = 0; i < num_of_city; i++, cout << endl)
-//        for (int j = 0; j < num_of_city; ++j)
-//            cout << cheapWay[i][j] <<' ' ;
-//    cout << "0->";
-//    for (auto i = cheapRoute[0][2].begin(); i != cheapRoute[0][2].end(); ++i)
-//        cout << i->tail << "->";
-//    cout << "success" << endl;
 }
 
 void TrafficNet::Run_SPFA() //生成用时最短 i城市到 j 城市 出发时间为 k
 {
-//    for (int i = 0; i < num_of_city; ++i, cout<<endl)
-//        for (int j = 0; j < num_of_city; ++j)
-//            cout << quickWay[i][j][1] << ' ';
     for (int source = 0; source < num_of_city; ++source)
         for (int time = 0; time < MAXTIME; ++time)
         {
@@ -297,15 +297,12 @@ int TrafficNet::Get_Rough_Cost(People &p)  //current time + t
 
 void TrafficNet::Run_DFS(People &p, const int &money, const int &t)
 {
-//                     cout << p.location << endl;
-    //到达终点且遍历完全部
-    //Print_Route(p.plan.source, currentRoute);
     if ((p.location == p.plan.destination) && (p.plan.station.empty()))
     {
         if ((minMixCost > money) && (t <= p.plan.timeLimit))
         {
             minMixCost = money;
-            bestRoute.assign(currentRoute.begin(), currentRoute.end());
+            bestRoute = currentRoute;
             //Print_Route(p.plan.source, bestRoute);
             return;
         }
@@ -318,14 +315,9 @@ void TrafficNet::Run_DFS(People &p, const int &money, const int &t)
         return;
 //    if (t > p.plan.timeLimit || money > minMixCost)
 //        return;
-    
-    // 限制搜索深度
-    //if (currentRoute.size() > p.plan.num_of_station + 2) return;
-    
-    //遍历完所有的点
+
     int now = p.location;
     Line *temp = citys[p.location].FirstLine;
-//    int static num = 0;
     
     while (temp != NULL)
     {
@@ -335,22 +327,15 @@ void TrafficNet::Run_DFS(People &p, const int &money, const int &t)
         int seq = p.Check_City();
         if (seq >= 0)
         {
-//            num++;
-//            cout << num << ": ";
-//            copy(p.plan.station.begin(), p.plan.station.end(), ostream_iterator<int>(cout, " "));
-//            cout << endl;
             p.plan.station.erase(p.plan.station.begin() + seq);
             Run_DFS(p, money + temp->cost, Move(t + current_time, *temp) - current_time);
             p.location = now;
             p.plan.station.insert(p.plan.station.begin() + seq, temp->tail);
-//            cout << num << ": ";
-//            copy(p.plan.station.begin(), p.plan.station.end(), ostream_iterator<int>(cout, " "));
-//            cout << endl;
         }
         else
             Run_DFS(p, money + temp->cost, Move(t + current_time, *temp) - current_time);
         
-        p.location = now; //可移动
+        p.location = now;
         currentRoute.pop_back();
         temp = temp->NextLine;
     }
@@ -378,15 +363,9 @@ int TrafficNet::Get_Cost(const vector <int> &a, const People &p) const          
     
     //考虑无必经点的情况
     if (p.plan.station.empty())
-    {
-        if (p.route.empty()) return cheapWay[p.plan.source][p.plan.destination];
-        else return p.route[0].cost + cheapWay[p.route[0].tail][p.plan.destination];
-    }
-    
-    if (p.route.size() == 0)
-        tot = cheapWay[p.plan.source][a[0]];
-    else
-        tot = cheapWay[p.route[0].tail][a[0]];
+        return cheapWay[p.plan.source][p.plan.destination];
+
+    tot = cheapWay[p.plan.source][a[0]];
     
     for (i = 0; i < a.size() - 1; ++i)
         tot += cheapWay[a[i]][a[i + 1]];
@@ -399,17 +378,9 @@ int TrafficNet::Get_Time(const vector <int> &a, const People &p, const int &time
     
     //考虑无必经点的情况
     if (p.plan.station.empty())
-    {
-        if (p.route.empty()) return time + (quickWay[p.plan.source][p.plan.destination][time % MAXTIME] - time % MAXTIME);
-        else return time + (quickWay[p.route[0].tail][p.plan.destination][(time + p.route[0].tail) % MAXTIME] - (time + p.route[0].tail) % MAXTIME);
-    }
+        return time + (quickWay[p.plan.source][p.plan.destination][time % MAXTIME] - time % MAXTIME);
     
-    if (p.route.size() != 0)
-    {
-        t = time + p.route[0].duration;
-        t = quickWay[p.route[0].tail][a[0]][t % MAXTIME];
-    }
-    else t = time + (quickWay[p.plan.source][a[0]][time % MAXTIME] - time % MAXTIME);
+    t = time + (quickWay[p.plan.source][a[0]][time % MAXTIME] - (time % MAXTIME));
     
     for (i = 0; i < a.size() - 1; ++i)
         t += quickWay[a[i]][a[i + 1]][t % MAXTIME] - (t % MAXTIME);
@@ -422,24 +393,11 @@ vector <Line> TrafficNet::Generate_Cheap_Route(People &p, const vector <int> &be
     int i;
     
     if (p.plan.station.size() == 0)
-    {
-        if (p.route.size() == 0) bestRoute.assign(cheapRoute[p.plan.source][p.plan.destination].begin(), cheapRoute[p.plan.source][p.plan.destination].end());
-        else
-        {
-            bestRoute.push_back(p.route[0]);
-            bestRoute.insert(bestRoute.end(), cheapRoute[p.route[0].tail][p.plan.destination].begin(), cheapRoute[p.plan.source][p.plan.destination].end());
-        }
-    }
+        bestRoute.assign(cheapRoute[p.plan.source][p.plan.destination].begin(), cheapRoute[p.plan.source][p.plan.destination].end());
     
     else
     {
-        if (p.route.size() == 0)
-            bestRoute.insert(bestRoute.begin(), cheapRoute[p.plan.source][bestTour[0]].begin(), cheapRoute[p.plan.source][bestTour[0]].end());
-        else
-        {
-            bestRoute.push_back(p.route[0]);
-            bestRoute.insert(bestRoute.begin(), cheapRoute[p.route[0].tail][bestTour[0]].begin(), cheapRoute[p.route[0].tail][bestTour[0]].end());
-        }
+        bestRoute.insert(bestRoute.begin(), cheapRoute[p.plan.source][bestTour[0]].begin(), cheapRoute[p.plan.source][bestTour[0]].end());
         
         for (i = 0; i < bestTour.size() - 1; i++)
             bestRoute.insert(bestRoute.end(), cheapRoute[bestTour[i]][bestTour[i + 1]].begin(), cheapRoute[bestTour[i]][bestTour[i + 1]].end());
@@ -457,30 +415,14 @@ vector <Line> TrafficNet::Generate_Quick_Route(People &p, const vector <int> &be
     
     if (bestTour.empty())
     {
-        if (p.route.size() == 0)
-            bestRoute.assign(quickRoute[p.plan.source][p.plan.destination][current_time].begin(), quickRoute[p.plan.source][p.plan.destination][current_time].end());
-        else
-        {
-            bestRoute.push_back(p.route[0]);
-            bestRoute.insert(bestRoute.end(), quickRoute[p.route[0].tail][p.plan.destination][(t + p.route[0].duration) % MAXTIME].begin(), quickRoute[p.route[0].tail][p.plan.destination][(t + p.route[0].duration) % MAXTIME].end());
-        }
+        bestRoute.assign(quickRoute[p.plan.source][p.plan.destination][current_time].begin(), quickRoute[p.plan.source][p.plan.destination][current_time].end());
     }
     
     else
     {
-        if (p.route.size() == 0)
-        {
-            bestRoute.insert(bestRoute.begin(), quickRoute[p.plan.source][bestTour[0]][t].begin(), quickRoute[p.plan.source][bestTour[0]][t].end());
-            t = quickWay[p.plan.source][bestTour[0]][t] % MAXTIME;
-        }
-        else
-        {
-            bestRoute.push_back(p.route[0]);
-            bestRoute.insert(bestRoute.begin(), quickRoute[p.route[0].tail][bestTour[0]][t].begin(), quickRoute[p.route[0].tail][bestTour[0]][t].end());
-            t = t + p.route[0].duration;
-            t = quickWay[p.route[0].tail][bestTour[0]][t] % MAXTIME;
-        }
-
+        bestRoute.insert(bestRoute.begin(), quickRoute[p.plan.source][bestTour[0]][t].begin(), quickRoute[p.plan.source][bestTour[0]][t].end());
+        t = quickWay[p.plan.source][bestTour[0]][t] % MAXTIME;
+       
         for (i = 0; i < bestTour.size() - 1; ++i)
         {
             bestRoute.insert(bestRoute.end(), quickRoute[bestTour[i]][bestTour[i + 1]][t].begin(), quickRoute[bestTour[i]][bestTour[i + 1]][t].end());
@@ -560,7 +502,17 @@ vector <int> TrafficNet::Run_SA(const People &p, const double &control, const in
 
 void TrafficNet::Design_Route(People &p)
 {
+    int t = current_time;
     bestRoute.clear();
+    
+    p.plan.source = p.location;
+    
+    if (!p.route.empty() && p.route[0].leaveTime == ACTIVE)
+    {
+        p.plan.source = p.route[0].tail;
+        if (p.plan.type == 3) p.plan.timeLimit -= p.route[0].duration;
+        t = (t + p.route[0].duration) % MAXTIME;
+    }
     
     if (p.plan.type == 1)
         bestRoute = Generate_Cheap_Route(p, Run_SA(p, HIGHTEMP));
@@ -569,72 +521,79 @@ void TrafficNet::Design_Route(People &p)
     
     else            //必经30个点
     {
-        clock_t start = clock();
         vector <int> roughTour(0);
         vector <Line> temp(0);
         
-        p.plan.type = 1;
+        //搜索状态初始化
         minMixCost = MAXVALUE;
-        bestRoute.clear();
         currentRoute.clear();
-        p.plan.num_of_station = (int) p.plan.station.size();
         
-        if (p.route.size() == 0)
-        {
-            p.location = p.plan.source;
-            p.Check_City();
-            roughTour = Run_SA(p, HIGHTEMP);     //获得最便宜路线
-            temp = Generate_Quick_Route(p, roughTour);
-            if (Get_Route_Time(temp, current_time) <= p.plan.timeLimit)
-                bestRoute = temp;
-            
-            else
-            {
-                p.plan.type = 2;
-                roughTour = Run_SA(p, MIDTEMP);
-                if (Get_Time(roughTour, p, current_time) - current_time <= p.plan.timeLimit)
-                {
-                    bestRoute = Generate_Quick_Route(p, roughTour);
-                    minMixCost = 0;
-                    for (int i = 0; i < bestRoute.size(); i ++)
-                        minMixCost += bestRoute[i].cost;
-                    p.plan.type = 3;
-                    Run_DFS(p, 0, 0);
-                }
-            }
-        }
+        //求最小花费
+        p.plan.type = 1;
+        roughTour = Run_SA(p, HIGHTEMP);     //获得最便宜路线
+        temp = Generate_Cheap_Route(p, roughTour);
+        if (Get_Route_Time(temp, t) <= p.plan.timeLimit)
+            bestRoute = temp;
         else
         {
-            p.location = p.plan.source = p.route[0].tail;
-            p.Check_City();
-            currentRoute.push_back(p.route[0]);
-            roughTour = Run_SA(p, HIGHTEMP);     //获得最便宜路线
-            temp = Generate_Quick_Route(p, roughTour);
-            if (Get_Route_Time(temp, current_time + p.route[0].duration) <= p.plan.timeLimit)
-                bestRoute = temp;
-            
-            else
+            p.plan.type = 2;
+            roughTour = Run_SA(p, MIDTEMP);
+            if (Get_Time(roughTour, p, t) - t <= p.plan.timeLimit)
             {
-                p.plan.type = 2;
-                roughTour = Run_SA(p, MIDTEMP, (current_time + p.route[0].duration) % MAXTIME);
-
-                if (Get_Time(roughTour, p, current_time + p.route[0].duration) - (current_time + p.route[0].duration) <= p.plan.timeLimit)
-                {
-                    bestRoute = Generate_Quick_Route(p, roughTour);
-                    bestRoute.insert(bestRoute.begin(), p.route[0]);
-                    minMixCost = 0;
-                    for (int i = 1; i < bestRoute.size(); i ++)
-                        minMixCost += bestRoute[i].cost;
-                    p.plan.type = 3;
-                    Run_DFS(p, 0, p.route[0].duration);
-                }
+                bestRoute = Generate_Quick_Route(p, roughTour);
+                minMixCost = 0;
+                for (int i = 0; i < bestRoute.size(); i ++)
+                    minMixCost += bestRoute[i].cost;
+                p.plan.type = 3;
+                Run_DFS(p, 0, 0);
             }
         }
-        clock_t end = clock();
-        cout << (double)(end - start) / CLOCKS_PER_SEC << endl;
+        p.plan.type = 3;
     }
     
-    p.route.assign(bestRoute.begin(), bestRoute.end());
+    if (!p.route.empty() && p.route[0].leaveTime == ACTIVE) bestRoute.insert(bestRoute.begin(), p.route[0]);
+    p.route = bestRoute;
+
+    Print_Route(p);
+
+}
+
+//thisname是客户名字
+int TrafficNet::Change_Plan(const string &thisName, const string &newDest, const int &newType, const vector <string> &newStation, const int &newTimeLimit)
+
+{
+    int i = Find_People(thisName);
+    
+    if (i == ERROR) return ERROR;
+    
+    People &p = people[i];
+    
+    //检查输入数据是否有误
+    auto it = cityNum.find(newDest);
+    
+    if (it == cityNum.end() || newType < 1 || newType > 3)
+        return ERROR;
+    for (int i = 0; i < newStation.size(); ++i)
+    {
+        it = cityNum.find(newStation[i]);
+        
+        if (it == cityNum.end())
+            return ERROR;
+    }
+    
+    p.plan.type = newType;
+    p.plan.destination = cityNum[newDest];
+    
+    p.plan.station.clear();
+    p.plan.station.resize(newStation.size());
+    for (int i = 0; i < newStation.size(); ++i)
+        p.plan.station[i] = cityNum[newStation[i]];
+    
+    if (newType == 3)
+        p.plan.timeLimit = newTimeLimit;
+    
+    Design_Route(p);
+    return OK;
 }
 
 void TrafficNet::Print_Edges() const
@@ -652,20 +611,28 @@ void TrafficNet::Print_Edges() const
 	}
 }
 
-void TrafficNet::Print_Route(const int start, const vector<Line> & route) const
+void TrafficNet::Print_Route(const People &p) const
 {
-    int now = start, t = current_time, day = 0, money = 0;
+    int t = current_time, day = 0, money = 0;
     
-    if (route.empty())
+    if (p.route.empty())
     {
-        cout << "There isn't a route that can satify your need:(" << endl;
+        routeFile << "There isn't a route that can satify your need:(" << endl;
         return;
     }
     
-    for (auto next = route.begin();  next != route.end(); ++next)
+    routeFile << "Day " << current_day << " " << current_time << ":00  ";
+    routeFile <<"Client " << p.name << "'s route is:" << endl;
+    
+    for (auto next = p.route.begin();  next != p.route.end(); ++next)
     {
-        cout << "At " << next->leaveTime << ":00, take on the " << next->name << " from " << citys[now].name
-            << " to " << citys[next->tail].name << ", arrive at " << Move(t, *next) % MAXTIME << ":00." << endl;
+        routeFile << "At " ;
+        //避免输出-1
+        if (next->leaveTime == ACTIVE) routeFile << current_time;
+        else routeFile << next->leaveTime;
+        
+        routeFile << ":00, take on the " << next->name << " from " << citys[next->head].name
+        << " to " << citys[next->tail].name << ", arrive at " << Move(t, *next) % MAXTIME << ":00." << endl;
         t = Move(t, *next);
         if (t >= MAXTIME)
         {
@@ -673,49 +640,87 @@ void TrafficNet::Print_Route(const int start, const vector<Line> & route) const
             day++;
         }
         money += next->cost;
-        now = next->tail;
     }
     
-    cout <<"Totally, it takes you $"<< money << " and " << day * MAXTIME + t - current_time << "h." << endl;
+    routeFile <<"Totally, it takes $"<< money << " and " << day * MAXTIME + t - current_time << "h." << endl << endl;
     
 }
 
-void TrafficNet::Add_People()
+bool TrafficNet::Add_People(People& temp)
 {
-    People *temp = new People;
+    //People *temp = new People;
+    //extern ifstream infile;
     
     num_of_people ++;
-//    cout << "Input the your name and password" << endl;
-//    cin >> temp->name;
-//    cin >> temp->password;
-//
-  //  cout << cityNum["SH"] << endl;
-    string start, end;
-    cout << "What's your departure and destination and plans?" << endl;
-    cin >> start >> end >> (temp->plan).type;
-    (temp->plan).source = cityNum[start];
-    (temp->plan).destination = cityNum[end];
-    cout << "How many cities you wanna pass by, and what are they?" << endl;
+    //cout << "Input the your name and password" << endl;
+    //infile >> temp->name;
+
+    //cout << "What's your departure and destination and plans?" << endl;
+    //infile >> start >> end >> (temp->plan).type;
+    //(temp->plan).source = cityNum[start];
+    //(temp->plan).destination = cityNum[end];
+    //temp->location = (temp->plan).source;
+    //cout << "How many cities you wanna pass by, and what are they?" << endl;
     
-    int n;
-    cin >> n;
-    for (int i = 0; i < n; ++i)
+    //int n;
+    //infile >> n;
+  //  for (int i = 0; i < n; ++i)
+   // {
+   //     string s;
+   //     infile >> s;
+   //     (temp->plan).station.push_back(cityNum[s]);
+   // }
+    
+   // if (temp->plan.type == 3)
+   // {
+      //  cout << "And what's your time limit?" << endl;
+   //     infile >> (temp->plan).timeLimit;
+   // }
+    
+    //temp->location = (temp->plan).source;
+    Design_Route(temp);    //如果是中途改变，要保留当前边
+    if (temp.route.empty())
+        return false;
+    if ((temp.route.size() != 0) && (temp.route)[0].leaveTime == current_time)
     {
-        string s;
-        cin >> s;
-        (temp->plan).station.push_back(cityNum[s]);
-    //    (temp->plan).isStation[cityNum[s]] = i;
+        (temp.route)[0].leaveTime = ACTIVE;
+        temp.usedMoney += (temp.route)[0].cost;
+        temp.Report(DEPART);
     }
-    
-    if (temp->plan.type == 3)
+    people.push_back(temp);
+    return true;
+}
+
+int TrafficNet::Find_People(const string &a)
+{
+    for (int i = 0; i < people.size(); ++i)
+        if (people[i].name == a)
+            return i;
+    return ERROR;
+}
+
+string TrafficNet::Get_Location(const int &seq)
+{
+    if (people[seq].route.size() == 0)
+        return citys[people[seq].plan.destination].name;
+    else if (people[seq].route[0].leaveTime == ACTIVE)
     {
-        cout << "And what's your time limit?" << endl;
-        cin >> (temp->plan).timeLimit;
+
+        return trafficNet.numCity[people[seq].route[0].head] + " " + trafficNet.numCity[people[seq].route[0].tail];
     }
-    Design_Route(*temp);    //如果是中途改变，要保留当前边
-    
-    people.push_back(*temp);
-    
-    cout << "For client" << temp->name << ", Your route is:" << endl;
-    Print_Route((temp->plan).source, temp->route);
+
+    else
+        return citys[people[seq].location].name;
+}
+
+void TrafficNet::Move_People()
+{
+    //qDebug()<<current_time;
+
+    for (int i = 0; i < people.size(); ++i)
+        if (people[i].location != CLIENT_SLEEP)
+             people[i].Transfer();
+
+
+
 }
