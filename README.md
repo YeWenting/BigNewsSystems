@@ -1,6 +1,7 @@
 #“旅行模拟查询系统”设计文档		
 *叶文霆 熊柏桥 董升华*
-      See more details on the 实验文档/
+*README is lack of some important details and experiments, see more in 实验文档/*
+
       
 ##分工
 1. 熊柏桥  时刻表的文件读入 图的初始化
@@ -174,3 +175,7 @@ Quoted from Baidu Encyclopedia
 再考虑到我们的图是一个*稠密图*，我们采用**堆优化的Dijkstra算法**。考虑到等车时间的存在，在每次新增加一个点x进入集合 S 时，我们松弛集合 V-S中的点时，要增加候车时间，即 (vihecle->depature + 24 -  dist[x]) mod 24。(vihicle 是图中的边)
 
 对于不同初始时刻， n 个顶点，我们需要用 O(n logn)的时间求最短路，预处理出leastTime[i][j][k]的时间应该是O(24\*n^2\*logn)。
+
+# License
+
+All codes in this repository are licensed under the terms you may find in the file named "LICENSE" in this directory.
