@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialogerror2</class>
+ <widget class="QDialog" name="Dialogerror2">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>568</width>
+    <height>410</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>787</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background:rgb(255,255,255)</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>20</y>
+     <width>201</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 30pt &quot;Agency FB&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Error !</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="confirmBg">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>298</y>
+     <width>166</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(255, 0, 0);
+border-radius:33px;
+padding:2px 4px;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="confirm">
+   <property name="geometry">
+    <rect>
+     <x>192</x>
+     <y>300</y>
+     <width>162</width>
+     <height>76</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(255, 255, 255);
+color:rgb(255, 0, 0);
+font: 10pt &quot;Consolas&quot;;
+border:2px  ;
+border-color:rgb(24, 186, 210);
+border-radius:30px;
+padding:2px 4px;</string>
+   </property>
+   <property name="text">
+    <string>Confirm</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>-10</x>
+     <y>270</y>
+     <width>821</width>
+     <height>1</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(135, 139, 141)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>130</y>
+     <width>541</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 15pt &quot;Agency FB&quot;;</string>
+   </property>
+   <property name="text">
+    <string>No valid route. Please try another plan.</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
